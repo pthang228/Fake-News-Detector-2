@@ -1,0 +1,6 @@
+node_modules/
+dist/
+.env
+fake-news-detecto-firebase-adminsdk-fbsvc-fbd4c0755b.json
+logs/
+*.log

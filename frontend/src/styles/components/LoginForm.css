@@ -1,0 +1,384 @@
+/* ========================================
+   LOGIN FORM - CYBERSECURITY THEME
+   Matching main app design language
+======================================== */
+
+/* Import CSS Variables from main app */
+:root {
+  --primary-blue: #0066ff;
+  --primary-purple: #6366f1;
+  --accent-cyan: #06b6d4;
+  --accent-green: #10b981;
+  --warning-red: #ef4444;
+  --dark-bg: #0f172a;
+  --dark-card: #1e293b;
+  --glass-bg: rgba(15, 23, 42, 0.8);
+  --glass-border: rgba(99, 102, 241, 0.2);
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --shadow-glow: 0 0 50px rgba(99, 102, 241, 0.3);
+  --gradient-main: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+  --gradient-accent: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #06b6d4 100%);
+}
+
+/* ========================================
+   LOGIN FORM CONTAINER
+======================================== */
+.login-form {
+  max-width: 420px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 3rem 2.5rem;
+  background: rgba(30, 41, 59, 0.85);
+  backdrop-filter: blur(25px);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+  animation: slideInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Animated background grid */
+.login-form::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    linear-gradient(rgba(99, 102, 241, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99, 102, 241, 0.05) 1px, transparent 1px);
+  background-size: 30px 30px;
+  animation: gridPulse 4s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.login-form > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Glow effect on hover */
+.login-form:hover {
+  border-color: var(--primary-purple);
+  box-shadow: 
+    0 25px 80px rgba(99, 102, 241, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ========================================
+   FORM TITLE
+======================================== */
+.login-form h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  background: var(--gradient-accent);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-align: center;
+  margin-bottom: 2rem;
+  position: relative;
+  text-shadow: none;
+}
+
+.login-form h2::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 2px;
+  background: var(--gradient-accent);
+  border-radius: 1px;
+  animation: glowPulse 2s ease-in-out infinite;
+}
+
+/* ========================================
+   FORM LABELS
+======================================== */
+.login-form label {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  margin-top: 1.5rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  position: relative;
+}
+
+.login-form label:first-of-type {
+  margin-top: 0;
+}
+
+.login-form label::before {
+  content: '';
+  position: absolute;
+  left: -10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 12px;
+  background: var(--gradient-accent);
+  border-radius: 2px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.login-form label:hover::before {
+  opacity: 1;
+}
+
+/* ========================================
+   FORM INPUTS
+======================================== */
+.login-form input[type="text"],
+.login-form input[type="password"] {
+  width: 100%;
+  padding: 16px 20px;
+  margin-bottom: 1rem;
+  background: rgba(15, 23, 42, 0.8);
+  border: 2px solid rgba(99, 102, 241, 0.2);
+  border-radius: 12px;
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-family: inherit;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.login-form input[type="text"]:focus,
+.login-form input[type="password"]:focus {
+  outline: none;
+  border-color: var(--primary-purple);
+  background: rgba(15, 23, 42, 0.95);
+  box-shadow: 
+    0 0 25px rgba(99, 102, 241, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.login-form input[type="text"]:hover,
+.login-form input[type="password"]:hover {
+  border-color: rgba(99, 102, 241, 0.4);
+  background: rgba(15, 23, 42, 0.9);
+}
+
+.login-form input::placeholder {
+  color: rgba(203, 213, 225, 0.5);
+  transition: color 0.3s ease;
+}
+
+.login-form input:focus::placeholder {
+  color: rgba(203, 213, 225, 0.7);
+}
+
+/* ========================================
+   SUBMIT BUTTON
+======================================== */
+.login-form button[type="submit"] {
+  width: 100%;
+  padding: 16px 24px;
+  margin-top: 1.5rem;
+  background: var(--gradient-accent);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 30px rgba(99, 102, 241, 0.4);
+}
+
+.login-form button[type="submit"]:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(99, 102, 241, 0.6);
+  filter: brightness(1.1);
+}
+
+.login-form button[type="submit"]:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 6px 25px rgba(99, 102, 241, 0.5);
+}
+
+/* Button loading state */
+.login-form button[type="submit"]:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.2);
+}
+
+/* Shimmer effect for loading button */
+.login-form button[type="submit"]:disabled::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  animation: shimmer 1.5s infinite;
+}
+
+/* ========================================
+   ANIMATIONS
+======================================== */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes gridPulse {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.1;
+  }
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.8);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+======================================== */
+@media (max-width: 768px) {
+  .login-form {
+    max-width: 360px;
+    padding: 2.5rem 2rem;
+    margin: 1rem;
+    border-radius: 20px;
+  }
+  
+  .login-form h2 {
+    font-size: 1.8rem;
+  }
+  
+  .login-form input[type="text"],
+  .login-form input[type="password"] {
+    padding: 14px 18px;
+    font-size: 0.95rem;
+  }
+  
+  .login-form button[type="submit"] {
+    padding: 14px 20px;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-form {
+    max-width: 320px;
+    padding: 2rem 1.5rem;
+  }
+  
+  .login-form h2 {
+    font-size: 1.6rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .login-form label {
+    font-size: 0.9rem;
+    margin-top: 1.2rem;
+  }
+  
+  .login-form input[type="text"],
+  .login-form input[type="password"] {
+    padding: 12px 16px;
+  }
+  
+  .login-form button[type="submit"] {
+    padding: 12px 18px;
+    margin-top: 1.2rem;
+  }
+}
+
+/* ========================================
+   ACCESSIBILITY & PREFERENCES
+======================================== */
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .login-form {
+    border-width: 2px;
+  }
+  
+  .login-form input[type="text"],
+  .login-form input[type="password"] {
+    border-width: 2px;
+  }
+  
+  .login-form button[type="submit"] {
+    border: 2px solid var(--primary-purple);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .login-form,
+  .login-form::before,
+  .login-form h2::after,
+  .login-form input,
+  .login-form button {
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  .login-form:hover {
+    transform: none;
+  }
+}
+
+/* Focus visible for keyboard navigation */
+.login-form input:focus-visible {
+  outline: 2px solid var(--accent-cyan);
+  outline-offset: 2px;
+}
+
+.login-form button:focus-visible {
+  outline: 2px solid var(--accent-cyan);
+  outline-offset: 2px;
+}

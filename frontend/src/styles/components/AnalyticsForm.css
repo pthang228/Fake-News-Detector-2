@@ -1,0 +1,649 @@
+/* ========================================
+   ANALYTICS FORM - CYBERSECURITY THEME
+   Matching main app design language
+======================================== */
+
+/* Import CSS Variables from main app */
+:root {
+    --primary-blue: #0066ff;
+    --primary-purple: #6366f1;
+    --accent-cyan: #06b6d4;
+    --accent-green: #10b981;
+    --warning-red: #ef4444;
+    --dark-bg: #0f172a;
+    --dark-card: #1e293b;
+    --glass-bg: rgba(15, 23, 42, 0.8);
+    --glass-border: rgba(99, 102, 241, 0.2);
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --shadow-glow: 0 0 50px rgba(99, 102, 241, 0.3);
+    --gradient-main: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+    --gradient-accent: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #06b6d4 100%);
+}
+
+/* ========================================
+   ANALYTICS FORM CONTAINER
+======================================== */
+.analytics-form-container {
+    width: 100%;
+    max-width: 800px;
+    /* Tăng chiều rộng để có nhiều không gian hơn */
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.analytics-form {
+    width: 100%;
+    padding: 2.5rem 2rem;
+    background: rgba(30, 41, 59, 0.85);
+    backdrop-filter: blur(25px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+    animation: slideInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Cho phép form tự động mở rộng theo nội dung */
+    min-height: auto;
+    height: auto;
+}
+
+/* Animated background grid */
+.analytics-form::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+        linear-gradient(rgba(6, 182, 212, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(6, 182, 212, 0.03) 1px, transparent 1px);
+    background-size: 25px 25px;
+    animation: gridPulse 6s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.analytics-form>* {
+    position: relative;
+    z-index: 1;
+}
+
+/* Glow effect on hover */
+.analytics-form:hover {
+    border-color: var(--accent-cyan);
+    box-shadow:
+        0 25px 80px rgba(6, 182, 212, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ========================================
+   FORM TITLE
+======================================== */
+.analytics-form h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #06b6d4 0%, #10b981 50%, #6366f1 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+    margin-bottom: 2rem;
+    position: relative;
+    text-shadow: none;
+}
+
+.analytics-form h2::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 2px;
+    background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%);
+    border-radius: 1px;
+    animation: glowPulse 3s ease-in-out infinite;
+}
+
+/* ========================================
+   FORM GROUP
+======================================== */
+.form-group {
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+/* ========================================
+   FORM LABELS
+======================================== */
+.analytics-form label {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    position: relative;
+}
+
+.analytics-form label::before {
+    content: '';
+    position: absolute;
+    left: -12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 14px;
+    background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%);
+    border-radius: 2px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.analytics-form label:hover::before {
+    opacity: 1;
+}
+
+/* ========================================
+   FORM INPUTS - AUTO WRAP ENABLED
+======================================== */
+.analytics-form input[type="text"] {
+    width: 100%;
+    min-height: 58px;
+    /* Chiều cao tối thiểu cho 1 dòng */
+    max-height: 200px;
+    /* Giới hạn chiều cao tối đa để tránh quá dài */
+    padding: 18px 24px;
+    background: rgba(15, 23, 42, 0.8);
+    border: 2px solid rgba(6, 182, 212, 0.2);
+    border-radius: 14px;
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-family: inherit;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+
+    /* Tự động wrap text khi quá dài */
+    resize: none;
+    overflow-y: auto;
+    /* Scroll khi vượt quá max-height */
+    overflow-x: hidden;
+    /* Ẩn scroll ngang */
+    word-wrap: break-word;
+    word-break: break-word;
+    white-space: pre-wrap;
+    /* Giữ nguyên line breaks và spaces */
+    overflow-wrap: break-word;
+    line-height: 1.5;
+
+    /* Smooth scrolling */
+    scroll-behavior: smooth;
+}
+
+/* ========================================
+   TEXTAREA - ENHANCED
+======================================== */
+.analytics-form textarea {
+    width: 100%;
+    padding: 18px 24px;
+    background: rgba(15, 23, 42, 0.8);
+    border: 2px solid rgba(6, 182, 212, 0.2);
+    border-radius: 14px;
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-family: inherit;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    resize: none;
+    line-height: 1.6;
+    min-height: 58px; /* Giảm xuống để thấy rõ sự khác biệt */
+    max-height: 200px;
+    overflow-y: auto;
+
+    /* Word wrap settings */
+    word-wrap: break-word;
+    word-break: break-word;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+
+    /* Smooth scrolling */
+    scroll-behavior: smooth;
+}
+
+/* Auto-resize class cho JavaScript control */
+.analytics-form input[type="text"].auto-resize,
+.analytics-form textarea.auto-resize {
+    height: auto;
+    overflow-y: hidden;
+    /* Ẩn scrollbar khi đang auto-resize */
+}
+
+/* Khi input/textarea đang được focus */
+.analytics-form input[type="text"]:focus,
+.analytics-form textarea:focus {
+    outline: none;
+    border-color: var(--accent-cyan);
+    background: rgba(15, 23, 42, 0.95);
+    box-shadow:
+        0 0 30px rgba(6, 182, 212, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
+}
+
+/* Styles cho input/textarea khi có nhiều nội dung */
+.analytics-form input[type="text"].expanded,
+.analytics-form textarea.expanded {
+    box-shadow:
+        0 0 40px rgba(6, 182, 212, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    border-color: rgba(6, 182, 212, 0.4);
+}
+
+/* Character counter cho input/textarea */
+.character-counter {
+    position: absolute;
+    bottom: -25px;
+    right: 0;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.form-group:focus-within .character-counter {
+    opacity: 1;
+}
+
+.character-counter.warning {
+    color: var(--warning-red);
+}
+
+/* Resize indicator */
+.resize-indicator {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    width: 16px;
+    height: 16px;
+    background: linear-gradient(135deg, transparent 0%, transparent 30%, var(--accent-cyan) 30%, var(--accent-cyan) 100%);
+    opacity: 0.3;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.analytics-form input[type="text"]:focus+.resize-indicator,
+.analytics-form textarea:focus+.resize-indicator {
+    opacity: 0.6;
+}
+
+.analytics-form input[type="text"]:hover:not(:disabled),
+.analytics-form textarea:hover:not(:disabled) {
+    border-color: rgba(6, 182, 212, 0.4);
+    background: rgba(15, 23, 42, 0.9);
+}
+
+.analytics-form input[type="text"]:disabled,
+.analytics-form textarea:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    border-color: rgba(203, 213, 225, 0.1);
+    resize: none;
+}
+
+.analytics-form input::placeholder,
+.analytics-form textarea::placeholder {
+    color: rgba(203, 213, 225, 0.5);
+    transition: color 0.3s ease;
+}
+
+.analytics-form input:focus::placeholder,
+.analytics-form textarea:focus::placeholder {
+    color: rgba(203, 213, 225, 0.7);
+}
+
+/* Error state for inputs */
+.analytics-form input.error,
+.analytics-form textarea.error {
+    border-color: var(--warning-red);
+    background: rgba(239, 68, 68, 0.05);
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
+}
+
+.analytics-form input.error:focus,
+.analytics-form textarea.error:focus {
+    border-color: var(--warning-red);
+    box-shadow:
+        0 0 25px rgba(239, 68, 68, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* ========================================
+   ERROR MESSAGE
+======================================== */
+.error-message {
+    margin-top: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 8px;
+    color: #fca5a5;
+    font-size: 0.875rem;
+    font-weight: 500;
+    animation: slideInDown 0.3s ease-out;
+    position: relative;
+}
+
+.error-message::before {
+    content: '⚠';
+    margin-right: 0.5rem;
+    color: var(--warning-red);
+}
+
+/* ========================================
+   SUBMIT BUTTON
+======================================== */
+.analytics-form button[type="submit"] {
+    width: 100%;
+    padding: 18px 28px;
+    margin-top: 1rem;
+    background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 8px 30px rgba(6, 182, 212, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.analytics-form button[type="submit"]:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(6, 182, 212, 0.6);
+    filter: brightness(1.1);
+}
+
+.analytics-form button[type="submit"]:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 6px 25px rgba(6, 182, 212, 0.5);
+}
+
+/* Button disabled state */
+.analytics-form button[type="submit"]:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: 0 4px 20px rgba(6, 182, 212, 0.2);
+    background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+}
+
+/* Button loading state */
+.analytics-form button[type="submit"].loading::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, 0.2),
+            transparent);
+    animation: shimmer 1.5s infinite;
+}
+
+/* ========================================
+   LOADING SPINNER
+======================================== */
+.loading-spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+}
+
+/* ========================================
+   ANIMATIONS
+======================================== */
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes gridPulse {
+
+    0%,
+    100% {
+        opacity: 0.2;
+    }
+
+    50% {
+        opacity: 0.05;
+    }
+}
+
+@keyframes glowPulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+    }
+
+    50% {
+        box-shadow: 0 0 20px rgba(6, 182, 212, 0.8);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        left: -100%;
+    }
+
+    100% {
+        left: 100%;
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Animation cho auto-resize */
+@keyframes inputGrow {
+    from {
+        transform: scaleY(0.95);
+        opacity: 0.8;
+    }
+
+    to {
+        transform: scaleY(1);
+        opacity: 1;
+    }
+}
+
+.analytics-form input[type="text"].growing,
+.analytics-form textarea.growing {
+    animation: inputGrow 0.2s ease-out;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+======================================== */
+@media (max-width: 768px) {
+    .analytics-form-container {
+        padding: 0.5rem;
+        max-width: 100%;
+        /* Full width trên tablet */
+    }
+
+    .analytics-form {
+        padding: 2rem 1.5rem;
+        border-radius: 16px;
+    }
+
+    .analytics-form h2 {
+        font-size: 1.6rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .analytics-form input[type="text"],
+    .analytics-form textarea {
+        padding: 16px 20px;
+        font-size: 0.95rem;
+    }
+
+    .analytics-form input[type="text"] {
+        min-height: 54px;
+        /* Giảm min-height trên tablet */
+        max-height: 160px;
+        /* Giảm max-height trên tablet */
+    }
+
+    .analytics-form textarea {
+        min-height: 120px;
+        /* Giảm min-height trên tablet */
+    }
+
+    .analytics-form button[type="submit"] {
+        padding: 16px 24px;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .analytics-form-container {
+        max-width: 100%;
+    }
+
+    .analytics-form {
+        padding: 1.5rem 1rem;
+    }
+
+    .analytics-form h2 {
+        font-size: 1.4rem;
+    }
+
+    .analytics-form label {
+        font-size: 0.9rem;
+    }
+
+    .analytics-form input[type="text"],
+    .analytics-form textarea {
+        padding: 14px 18px;
+    }
+
+    .analytics-form input[type="text"] {
+        min-height: 50px;
+        max-height: 140px;
+    }
+
+    .analytics-form textarea {
+        min-height: 100px;
+    }
+
+    .analytics-form button[type="submit"] {
+        padding: 14px 20px;
+    }
+}
+
+/* ========================================
+   ACCESSIBILITY & PREFERENCES
+======================================== */
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .analytics-form {
+        border-width: 2px;
+    }
+
+    .analytics-form input[type="text"],
+    .analytics-form textarea {
+        border-width: 2px;
+    }
+
+    .analytics-form button[type="submit"] {
+        border: 2px solid var(--accent-cyan);
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+
+    .analytics-form,
+    .analytics-form::before,
+    .analytics-form h2::after,
+    .analytics-form input,
+    .analytics-form textarea,
+    .analytics-form button,
+    .loading-spinner,
+    .error-message {
+        animation: none !important;
+        transition: none !important;
+    }
+
+    .analytics-form:hover {
+        transform: none;
+    }
+
+    .analytics-form input[type="text"],
+    Q .analytics-form textarea {
+        transition: height 0.1s ease;
+        /* Giữ lại transition cho height để auto-resize vẫn hoạt động */
+    }
+}
+
+/* Focus visible for keyboard navigation */
+.analytics-form input:focus-visible,
+.analytics-form textarea:focus-visible {
+    outline: 2px solid var(--accent-cyan);
+    outline-offset: 2px;
+}
+
+.analytics-form button:focus-visible {
+    outline: 2px solid var(--accent-cyan);
+    outline-offset: 2px;
+}

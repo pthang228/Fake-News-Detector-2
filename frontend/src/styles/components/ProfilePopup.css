@@ -1,0 +1,317 @@
+/* ========================================
+   PROFILE POPUP - CYBERSECURITY THEME
+   Compatible with main app theme & navbar
+======================================== */
+
+.profile-popup {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  min-width: 280px;
+  max-width: 350px;
+  padding: 1.5rem;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-radius: 16px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  z-index: 1001;
+  animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: top right;
+}
+
+/* Slide in animation */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Arrow pointer */
+.profile-popup::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  right: 20px;
+  width: 16px;
+  height: 16px;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-bottom: none;
+  border-right: none;
+  transform: rotate(45deg);
+  backdrop-filter: blur(20px);
+}
+
+/* User info paragraphs */
+.profile-popup p {
+  margin: 0 0 1rem 0;
+  color: var(--text-secondary, #cbd5e1);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+}
+
+.profile-popup p:last-of-type {
+  border-bottom: none;
+  margin-bottom: 1.5rem;
+}
+
+/* Strong labels */
+.profile-popup p strong {
+  color: var(--text-primary, #f8fafc);
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.2rem;
+}
+
+/* User data styling */
+.profile-popup p:nth-child(1) {
+  position: relative;
+}
+
+.profile-popup p:nth-child(1)::after {
+  content: '📧';
+  position: absolute;
+  right: 0;
+  top: 0.5rem;
+  opacity: 0.6;
+}
+
+.profile-popup p:nth-child(2) {
+  position: relative;
+}
+
+.profile-popup p:nth-child(2)::after {
+  content: '👤';
+  position: absolute;
+  right: 0;
+  top: 0.5rem;
+  opacity: 0.6;
+}
+
+/* Email and username values */
+.profile-popup p:not(:last-child) {
+  word-break: break-all;
+  overflow-wrap: break-word;
+}
+
+/* Close button */
+.profile-popup button {
+  width: 100%;
+  padding: 12px 20px;
+  background: rgba(30, 41, 59, 0.8);
+  color: var(--text-primary, #f8fafc);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-radius: 10px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Button hover effect */
+.profile-popup button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.profile-popup button:hover::before {
+  left: 100%;
+}
+
+.profile-popup button:hover {
+  background: rgba(30, 41, 59, 1);
+  border-color: var(--primary-purple, #6366f1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+}
+
+.profile-popup button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(99, 102, 241, 0.2);
+}
+
+/* ========================================
+   ENHANCED STYLING FOR EMPTY VALUES
+======================================== */
+.profile-popup p:has-text("null"),
+.profile-popup p:has-text("undefined") {
+  opacity: 0.6;
+  font-style: italic;
+}
+
+/* If displayName is null/undefined */
+.profile-popup p:nth-child(2):empty::after {
+  content: '👤 (Chưa cập nhật)';
+  color: var(--text-secondary, #cbd5e1);
+  opacity: 0.7;
+  font-style: italic;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+======================================== */
+@media (max-width: 768px) {
+  .profile-popup {
+    right: -10px;
+    min-width: 260px;
+    max-width: 320px;
+    padding: 1.2rem;
+  }
+  
+  .profile-popup::before {
+    right: 25px;
+  }
+  
+  .profile-popup p {
+    font-size: 0.9rem;
+  }
+  
+  .profile-popup button {
+    padding: 10px 16px;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-popup {
+    right: -20px;
+    left: -20px;
+    min-width: auto;
+    max-width: none;
+    width: calc(100vw - 40px);
+    padding: 1rem;
+  }
+  
+  .profile-popup::before {
+    right: 30px;
+  }
+  
+  .profile-popup p {
+    font-size: 0.85rem;
+    padding: 0.4rem 0;
+  }
+  
+  .profile-popup p strong {
+    font-size: 0.8rem;
+  }
+  
+  .profile-popup button {
+    padding: 10px 16px;
+    font-size: 0.8rem;
+  }
+}
+
+/* ========================================
+   ACCESSIBILITY ENHANCEMENTS
+======================================== */
+.profile-popup button:focus {
+  outline: 2px solid var(--primary-purple, #6366f1);
+  outline-offset: 2px;
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .profile-popup {
+    border-width: 2px;
+    background: rgba(15, 23, 42, 1);
+  }
+  
+  .profile-popup button {
+    border-width: 2px;
+  }
+  
+  .profile-popup p {
+    border-bottom-width: 2px;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .profile-popup {
+    animation: none;
+  }
+  
+  .profile-popup button,
+  .profile-popup button::before {
+    transition: none;
+  }
+}
+
+/* ========================================
+   DARK MODE ENHANCEMENTS
+======================================== */
+@media (prefers-color-scheme: dark) {
+  .profile-popup {
+    box-shadow: 
+      0 12px 40px rgba(0, 0, 0, 0.6),
+      0 0 0 1px rgba(255, 255, 255, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  }
+}
+
+/* ========================================
+   LOADING STATE (Optional)
+======================================== */
+.profile-popup.loading {
+  pointer-events: none;
+}
+
+.profile-popup.loading::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(2px);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ========================================
+   MICRO-INTERACTIONS
+======================================== */
+.profile-popup p {
+  transition: all 0.2s ease;
+}
+
+.profile-popup p:hover {
+  background: rgba(99, 102, 241, 0.05);
+  border-radius: 8px;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}

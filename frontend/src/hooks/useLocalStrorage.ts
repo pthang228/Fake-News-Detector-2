@@ -1,0 +1,1 @@
+// Hook tiện ích giúp lưu và lấy dữ liệu từ localStorage (ví dụ lưu token hoặc user).

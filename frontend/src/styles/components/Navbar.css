@@ -1,0 +1,368 @@
+/* ========================================
+   NAVBAR - CYBERSECURITY THEME
+   Compatible with main app theme
+======================================== */
+
+/* Prevent layout shift from scrollbar - cleanest solution */
+html {
+  overflow-y: scroll; /* Force scrollbar to always be visible */
+}
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.navbar-logo {
+  height: 50px;  /* chỉnh sao cho vừa ý */
+  width: auto;
+  object-fit: contain;
+  filter: brightness(1.5); /* tăng độ sáng lên 20% */
+}
+/* Navbar sections */
+.navbar-left,
+.navbar-center,
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.navbar-center {
+  flex: 1;
+  justify-content: center;
+  gap: 2rem;
+}
+
+/* Logo/Brand */
+.navbar-left a {
+  font-size: 1.5rem;
+  font-weight: 800;
+  text-decoration: none;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #06b6d4 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transition: all 0.3s ease;
+  text-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+}
+
+.navbar-left a:hover {
+  filter: brightness(1.2);
+  transform: scale(1.05);
+}
+
+/* Navigation Links */
+.navbar-center a {
+  color: var(--text-secondary, #cbd5e1);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1rem;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.navbar-center a::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.navbar-center a:hover::before {
+  left: 100%;
+}
+
+.navbar-center a:hover {
+  color: var(--text-primary, #f8fafc);
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Auth Links Container */
+.auth-links {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.auth-links a {
+  color: var(--text-secondary, #cbd5e1);
+  text-decoration: none;
+  font-weight: 500;
+  padding: 10px 20px;
+  border-radius: 10px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+/* Đăng nhập button */
+.auth-links a[href="/login"] {
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.auth-links a[href="/login"]:hover {
+  background: rgba(30, 41, 59, 1);
+  border-color: var(--primary-purple, #6366f1);
+  transform: translateY(-2px);
+  color: var(--text-primary, #f8fafc);
+}
+
+/* Đăng ký button */
+.auth-links a[href="/register"] {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #06b6d4 100%);
+  color: white;
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+}
+
+.auth-links a[href="/register"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(99, 102, 241, 0.6);
+  filter: brightness(1.1);
+}
+
+/* User Info Section */
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  position: relative;
+}
+
+/* Profile Button */
+.profile-btn {
+  background: rgba(30, 41, 59, 0.8);
+  color: var(--text-primary, #f8fafc);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.3) 0%, transparent 70%);
+  transform: translate(-50%, -50%);
+  transition: all 0.4s ease;
+  border-radius: 50%;
+}
+
+.profile-btn:hover::before {
+  width: 200px;
+  height: 200px;
+}
+
+.profile-btn:hover {
+  background: rgba(30, 41, 59, 1);
+  border-color: var(--primary-purple, #6366f1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+}
+
+/* Logout Button */
+.user-info button:last-child {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(239, 68, 68, 0.4);
+}
+
+.user-info button:last-child:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(239, 68, 68, 0.6);
+  filter: brightness(1.1);
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+======================================== */
+@media (max-width: 1024px) {
+  .navbar {
+    padding: 0 1.5rem;
+    height: 65px;
+  }
+  
+  .navbar-center {
+    gap: 1.5rem;
+  }
+  
+  .navbar-left,
+  .navbar-right {
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0 1rem;
+    height: 60px;
+    flex-wrap: wrap;
+  }
+  
+  .navbar-left a {
+    font-size: 1.3rem;
+  }
+  
+  .navbar-center {
+    display: none; /* Ẩn menu chính trên mobile - có thể thêm hamburger menu sau */
+  }
+  
+  .auth-links,
+  .user-info {
+    gap: 0.5rem;
+  }
+  
+  .auth-links a,
+  .profile-btn,
+  .user-info button {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    padding: 0 0.5rem;
+    height: 55px;
+  }
+  
+  .navbar-left a {
+    font-size: 1.1rem;
+  }
+  
+  .auth-links a,
+  .profile-btn,
+  .user-info button {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+  }
+  
+  .auth-links {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  
+  .user-info {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+}
+
+/* ========================================
+   MOBILE MENU (Optional - for future enhancement)
+======================================== */
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text-primary, #f8fafc);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 5px;
+}
+
+@media (max-width: 768px) {
+  .mobile-menu-btn {
+    display: block;
+  }
+}
+
+/* ========================================
+   ACCESSIBILITY ENHANCEMENTS
+======================================== */
+.navbar a:focus,
+.navbar button:focus {
+  outline: 2px solid var(--primary-purple, #6366f1);
+  outline-offset: 2px;
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .navbar {
+    border-bottom-width: 2px;
+  }
+  
+  .auth-links a,
+  .profile-btn {
+    border-width: 2px;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .navbar,
+  .navbar a,
+  .navbar button {
+    transition: none;
+  }
+  
+  .navbar-center a::before {
+    transition: none;
+  }
+  
+  .profile-btn::before {
+    transition: none;
+  }
+}
+
+/* ========================================
+   NAVBAR SCROLL EFFECT (Optional)
+======================================== */
+.navbar.scrolled {
+  background: rgba(15, 23, 42, 0.98);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
+  border-bottom-color: rgba(99, 102, 241, 0.4);
+}
+
+/* Animation cho navbar khi load */
+.navbar {
+  animation: slideDown 0.5s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
