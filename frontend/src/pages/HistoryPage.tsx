@@ -11,7 +11,7 @@ const HistoryPage: React.FC = () => {
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
   const [statistics, setStatistics] = useState<any>(null);
   
-  // Filter & Search states
+  // Filter & Search states - simplified
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [sortBy, setSortBy] = useState('newest');
@@ -310,7 +310,7 @@ const HistoryPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Filter Section */}
+          {/* Filter Section - Simplified */}
           <div className="filter-section">
             <select
               className="filter-select"
@@ -320,9 +320,6 @@ const HistoryPage: React.FC = () => {
               <option value="all">Tất cả</option>
               <option value="fake">Tin giả</option>
               <option value="real">Tin thật</option>
-              <option value="url">Phân tích URL</option>
-              <option value="text">Phân tích văn bản</option>
-              <option value="two-step">Two-Step Process</option>
             </select>
 
             <select
@@ -332,7 +329,6 @@ const HistoryPage: React.FC = () => {
             >
               <option value="newest">Mới nhất</option>
               <option value="oldest">Cũ nhất</option>
-              <option value="confidence">Độ tin cậy cao</option>
             </select>
           </div>
 
@@ -361,14 +357,6 @@ const HistoryPage: React.FC = () => {
             <div className="stat-card">
               <span className="stat-number">{statistics.realCount}</span>
               <span className="stat-label">Tin thật</span>
-            </div>
-            <div className="stat-card">
-              <span className="stat-number">{statistics.urlAnalyses}</span>
-              <span className="stat-label">Phân tích URL</span>
-            </div>
-            <div className="stat-card">
-              <span className="stat-number">{statistics.avgConfidence}%</span>
-              <span className="stat-label">Độ tin cậy TB</span>
             </div>
           </div>
         )}
