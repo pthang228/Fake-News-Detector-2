@@ -1,5 +1,5 @@
 // backend/src/services/urlAnalyzer.ts
-// 🔗 URL analysis with two-step verification process
+// 🔗 Công cụ phân tích URL với quy trình xác minh 2 bước
 
 import { AnalysisResult, WebContent, SearchResult } from '../types/interfaces';
 import { searchGoogleAPI, filterTrustedUrls, extractKeywordsFromURL } from './googleSearch';
@@ -11,26 +11,26 @@ import {
 } from './geminiAI';
 
 /**
- * Main URL analysis function using two-step process
- * Step 1: Search based on URL keywords
- * Step 2: Search based on extracted content topics
+ * Hàm phân tích URL chính sử dụng quy trình 2 bước
+ * Bước 1: Tìm kiếm dựa trên từ khóa URL
+ * Bước 2: Tìm kiếm dựa trên chủ đề nội dung đã trích xuất
  */
 export async function analyzeURL(url: string, originalMessage: string): Promise<AnalysisResult> {
-  console.log("🔗 Starting 2-step process for URL:", url);
+  console.log("🔗 Bắt đầu quy trình 2 bước cho URL:", url);
   
-  // STEP 1: Extract keywords from URL for initial search
+  // BƯỚC 1: Trích xuất từ khóa từ URL để tìm kiếm ban đầu
   const urlPath = decodeURIComponent(url);
   const urlKeywords = extractKeywordsFromURL(urlPath);
-  console.log("🔍 Keywords from URL:", urlKeywords);
+  console.log("🔍 Từ khóa từ URL:", urlKeywords);
   
-  // Check if Google Search API is available
+  // Kiểm tra Google Search API có khả dụng không
   if (!process.env.GOOGLE_SEARCH_API_KEY || !process.env.GOOGLE_SEARCH_ENGINE_ID) {
-    console.log("⚠️ No Google API - cannot perform 2-step process");
+    console.log("⚠️ Không có Google API - không thể thực hiện quy trình 2 bước");
     return await analyzeURLWithoutSearch(url, urlKeywords);
   }
   
-  // STEP 2: First search based on URL keywords
-  console.log("🔍 STEP 1: Search based on URL keywords");
+  // BƯỚC 2: Tìm kiếm đầu tiên dựa trên từ khóa URL
+  console.log("🔍 BƯỚC 1: Tìm kiếm dựa trên từ khóa URL");
   
   const firstQueries = [
     urlKeywords,
@@ -42,14 +42,14 @@ export async function analyzeURL(url: string, originalMessage: string): Promise<
   let firstSearchResults: SearchResult[] = [];
   let hasQuotaError = false;
   
-  // Perform first search with multiple queries
+  // Thực hiện tìm kiếm đầu tiên với nhiều truy vấn
   for (const query of firstQueries.slice(0, 3)) {
     try {
       const searchResults = await searchGoogleAPI(query, 6);
       firstSearchResults = firstSearchResults.concat(searchResults);
-      await new Promise(resolve => setTimeout(resolve, 500)); // Rate limiting
+      await new Promise(resolve => setTimeout(resolve, 500)); // Giới hạn tốc độ
     } catch (error) {
-      console.log("❌ Search error step 1:", (error as Error).message);
+      console.log("❌ Lỗi tìm kiếm bước 1:", (error as Error).message);
       
       if ((error as Error).message && (error as Error).message.includes('Quota exceeded')) {
         hasQuotaError = true;
@@ -58,49 +58,49 @@ export async function analyzeURL(url: string, originalMessage: string): Promise<
     }
   }
   
-  // If quota exceeded, fallback to AI-only analysis
+  // Nếu hết quota, chuyển sang phân tích chỉ bằng AI
   if (hasQuotaError) {
-    console.log("⚠️ Google Search API quota exceeded - switching to AI analysis");
+    console.log("⚠️ Google Search API hết quota - chuyển sang phân tích AI");
     return await analyzeURLWithoutSearch(url, urlKeywords);
   }
   
-  // Process first search results
+  // Xử lý kết quả tìm kiếm đầu tiên
   const uniqueFirstResults = firstSearchResults.filter((result, index, self) => 
     index === self.findIndex(r => r.link === result.link)
   );
   const trustedFirstResults = filterTrustedUrls(uniqueFirstResults);
-  console.log(`✅ Search step 1: found ${trustedFirstResults.length} sources`);
+  console.log(`✅ Tìm kiếm bước 1: tìm thấy ${trustedFirstResults.length} nguồn`);
   
-  // STEP 3: Fetch content from first search results
-  console.log("🌐 STEP 2: Fetch content from step 1 search");
+  // BƯỚC 3: Tải nội dung từ kết quả tìm kiếm đầu tiên
+  console.log("🌐 BƯỚC 2: Tải nội dung từ tìm kiếm bước 1");
   const firstFetchPromises = trustedFirstResults.slice(0, 5).map(result => 
     fetchWebContent(result.link)
   );
   
   const firstContents = await Promise.all(firstFetchPromises);
   const successfulFirstContents = firstContents.filter(content => content.success);
-  console.log(`✅ Fetch step 1: successful ${successfulFirstContents.length} sources`);
+  console.log(`✅ Tải bước 1: thành công ${successfulFirstContents.length} nguồn`);
   
-  // If no content was successfully fetched, fallback to AI analysis
+  // Nếu không tải được nội dung nào, chuyển sang phân tích AI
   if (successfulFirstContents.length === 0) {
-    console.log("⚠️ No content fetched - switching to AI analysis");
+    console.log("⚠️ Không tải được nội dung - chuyển sang phân tích AI");
     return await analyzeURLWithoutSearch(url, urlKeywords);
   }
   
-  // STEP 4: Analyze first step content to get main title and keywords
-  console.log("🤖 STEP 3: Analyze content to get main title and keywords");
+  // BƯỚC 4: Phân tích nội dung bước đầu để lấy tiêu đề chính và từ khóa
+  console.log("🤖 BƯỚC 3: Phân tích nội dung để lấy tiêu đề chính và từ khóa");
   const analysisResult = await analyzeFirstStepContent(url, urlKeywords, successfulFirstContents);
   
   if (!analysisResult || !analysisResult.mainTitle || !analysisResult.keyTopics) {
-    // If content analysis failed, return simplified analysis
+    // Nếu phân tích nội dung thất bại, trả về phân tích đơn giản
     return await createSimplifiedAnalysis(url, urlKeywords, successfulFirstContents);
   }
   
-  console.log("📰 Main title:", analysisResult.mainTitle);
-  console.log("🎯 Key topics:", analysisResult.keyTopics);
+  console.log("📰 Tiêu đề chính:", analysisResult.mainTitle);
+  console.log("🎯 Chủ đề chính:", analysisResult.keyTopics);
   
-  // STEP 5: Second search based on analyzed title and keywords
-  console.log("🔍 STEP 4: Second search based on main title and keywords");
+  // BƯỚC 5: Tìm kiếm thứ hai dựa trên tiêu đề và từ khóa đã phân tích
+  console.log("🔍 BƯỚC 4: Tìm kiếm thứ hai dựa trên tiêu đề chính và từ khóa");
   
   const secondQueries = [
     analysisResult.mainTitle,
@@ -113,48 +113,48 @@ export async function analyzeURL(url: string, originalMessage: string): Promise<
   
   let secondSearchResults: SearchResult[] = [];
   
-  // Perform second search
+  // Thực hiện tìm kiếm thứ hai
   for (const query of secondQueries.slice(0, 5)) {
     try {
       const searchResults = await searchGoogleAPI(query, 6);
-      // Filter out URLs already found in first search
+      // Lọc bỏ các URL đã tìm thấy trong lần tìm kiếm đầu tiên
       const newResults = searchResults.filter(result => 
         !firstSearchResults.some(first => first.link === result.link)
       );
       secondSearchResults = secondSearchResults.concat(newResults);
-      await new Promise(resolve => setTimeout(resolve, 500)); // Rate limiting
+      await new Promise(resolve => setTimeout(resolve, 500)); // Giới hạn tốc độ
     } catch (error) {
-      console.log("❌ Search error step 2:", (error as Error).message);
+      console.log("❌ Lỗi tìm kiếm bước 2:", (error as Error).message);
       if ((error as Error).message && (error as Error).message.includes('Quota exceeded')) {
-        console.log("⚠️ Quota exceeded in step 2 - using step 1 data");
+        console.log("⚠️ Hết quota ở bước 2 - sử dụng dữ liệu từ bước 1");
         break;
       }
     }
   }
   
-  // Process second search results
+  // Xử lý kết quả tìm kiếm thứ hai
   const uniqueSecondResults = secondSearchResults.filter((result, index, self) => 
     index === self.findIndex(r => r.link === result.link)
   );
   const trustedSecondResults = filterTrustedUrls(uniqueSecondResults);
-  console.log(`✅ Search step 2: found ${trustedSecondResults.length} new sources`);
+  console.log(`✅ Tìm kiếm bước 2: tìm thêm ${trustedSecondResults.length} nguồn mới`);
   
-  // STEP 6: Fetch content from second search results (if any)
+  // BƯỚC 6: Tải nội dung từ kết quả tìm kiếm thứ hai (nếu có)
   let successfulSecondContents: WebContent[] = [];
   
   if (trustedSecondResults.length > 0) {
-    console.log("🌐 STEP 5: Fetch content from step 2 search");
+    console.log("🌐 BƯỚC 5: Tải nội dung từ tìm kiếm bước 2");
     const secondFetchPromises = trustedSecondResults.slice(0, 5).map(result => 
       fetchWebContent(result.link)
     );
     
     const secondContents = await Promise.all(secondFetchPromises);
     successfulSecondContents = secondContents.filter(content => content.success);
-    console.log(`✅ Fetch step 2: successful ${successfulSecondContents.length} sources`);
+    console.log(`✅ Tải bước 2: thành công ${successfulSecondContents.length} nguồn`);
   }
   
-  // STEP 7: Final comprehensive analysis
-  console.log("🎯 STEP 6: Final analysis with complete information");
+  // BƯỚC 7: Phân tích toàn diện cuối cùng
+  console.log("🎯 BƯỚC 6: Phân tích cuối cùng với thông tin đầy đủ");
   const finalResult = await finalTwoStepAnalysis(
     url, 
     urlKeywords, 
@@ -172,20 +172,20 @@ export async function analyzeURL(url: string, originalMessage: string): Promise<
 }
 
 /**
- * Create simplified analysis when full two-step process fails
+ * Tạo phân tích đơn giản khi quy trình 2 bước đầy đủ thất bại
  */
 async function createSimplifiedAnalysis(url: string, urlKeywords: string, contents: WebContent[]): Promise<AnalysisResult> {
   return {
     isFakeNews: false,
     confidence: 50,
-    reason: `Simplified analysis for ${url} with ${contents.length} sources`,
-    indicators: ["Basic analysis - need more comprehensive verification"],
-    recommendation: "Requires additional verification from multiple trusted sources",
+    reason: `Phân tích đơn giản cho ${url} với ${contents.length} nguồn`,
+    indicators: ["Phân tích cơ bản - cần xác minh toàn diện hơn"],
+    recommendation: "Cần xác minh bổ sung từ nhiều nguồn tin đáng tin cậy",
     twoStepProcess: false,
     sourcesAnalyzed: contents.length,
     originalUrl: url,
     webEvidenceUsed: contents.length > 0,
     limitedAnalysis: true,
-    reason_limited: "Two-step process could not complete fully"
+    reason_limited: "Quy trình 2 bước không thể hoàn thành đầy đủ"
   };
 }

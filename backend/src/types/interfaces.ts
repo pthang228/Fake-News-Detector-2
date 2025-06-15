@@ -1,5 +1,5 @@
 // backend/src/types/interfaces.ts
-// 📋 All type definitions for the fake news detection system
+// 📋 Tất cả định nghĩa kiểu dữ liệu cho hệ thống phát hiện tin giả
 
 export interface WebContent {
   url: string;

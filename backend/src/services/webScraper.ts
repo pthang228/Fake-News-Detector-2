@@ -1,11 +1,11 @@
 // backend/src/services/webScraper.ts
-// 🌐 Web scraping and content extraction utilities
+// 🌐 Tiện ích thu thập và trích xuất nội dung web
 
 import axios, { AxiosResponse } from 'axios';
 import * as cheerio from 'cheerio';
 import { WebContent } from '../types/interfaces';
 
-// User-Agent configurations to avoid being blocked
+// Cấu hình User-Agent để tránh bị chặn
 const USER_AGENTS: string[] = [
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
   'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
@@ -13,26 +13,26 @@ const USER_AGENTS: string[] = [
 ];
 
 /**
- * Get random User-Agent to avoid detection
+ * Lấy User-Agent ngẫu nhiên để tránh phát hiện
  */
 export function getRandomUserAgent(): string {
   return USER_AGENTS[Math.floor(Math.random() * USER_AGENTS.length)];
 }
 
 /**
- * Extract clean text content from HTML
- * Removes ads, navigation, and other non-content elements
+ * Trích xuất nội dung văn bản sạch từ HTML
+ * Loại bỏ quảng cáo, điều hướng và các phần tử không phải nội dung
  */
 export function extractTextFromHTML(html: string): string {
   try {
     const $ = cheerio.load(html);
     
-    // Remove unnecessary elements
+    // Loại bỏ các phần tử không cần thiết
     $('script, style, nav, footer, header, aside, .advertisement, .ads, .social-share, .comments, .sidebar').remove();
     
     let mainContent = '';
     
-    // Try to find main content using common selectors
+    // Thử tìm nội dung chính bằng các selector phổ biến
     const contentSelectors: string[] = [
       'article',
       '[role="main"]', 
@@ -52,7 +52,7 @@ export function extractTextFromHTML(html: string): string {
       '.news-content'
     ];
     
-    // Find the best content element
+    // Tìm phần tử nội dung tốt nhất
     for (const selector of contentSelectors) {
       const element = $(selector);
       if (element.length > 0) {
@@ -64,7 +64,7 @@ export function extractTextFromHTML(html: string): string {
       }
     }
     
-    // Fallback to body text if no main content found
+    // Dự phòng về văn bản body nếu không tìm thấy nội dung chính
     if (!mainContent || mainContent.length < 100) {
       const bodyText = $('body').text().trim();
       if (bodyText.length > 0) {
@@ -72,30 +72,30 @@ export function extractTextFromHTML(html: string): string {
       }
     }
     
-    // Final fallback - get all text
+    // Dự phòng cuối cùng - lấy tất cả văn bản
     if (!mainContent || mainContent.length < 50) {
       mainContent = $.text().trim();
     }
     
-    // Clean up the text
+    // Làm sạch văn bản
     if (mainContent) {
       mainContent = mainContent
-        .replace(/\s+/g, ' ')        // Multiple spaces → single space
-        .replace(/\n+/g, '\n')       // Multiple newlines → single newline
-        .replace(/\t+/g, ' ')        // Tabs → spaces
+        .replace(/\s+/g, ' ')        // Nhiều khoảng trắng → một khoảng trắng
+        .replace(/\n+/g, '\n')       // Nhiều xuống dòng → một xuống dòng
+        .replace(/\t+/g, ' ')        // Tab → khoảng trắng
         .trim();
     }
     
     return mainContent || '';
     
   } catch (error) {
-    console.error("❌ Error extracting text from HTML:", (error as Error).message);
+    console.error("❌ Lỗi khi trích xuất văn bản từ HTML:", (error as Error).message);
     return '';
   }
 }
 
 /**
- * Extract title from HTML document
+ * Trích xuất tiêu đề từ tài liệu HTML
  */
 export function extractTitleFromHTML(html: string): string {
   try {
@@ -107,13 +107,13 @@ export function extractTitleFromHTML(html: string): string {
 }
 
 /**
- * Fetch and extract content from a web URL
- * Includes retry logic and fallback content extraction
+ * Tải và trích xuất nội dung từ URL web
+ * Bao gồm logic thử lại và trích xuất nội dung dự phòng
  */
 export async function fetchWebContent(url: string, maxRetries: number = 1): Promise<WebContent> {
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      console.log(`🌐 Fetching content from: ${url} (attempt ${attempt})`);
+      console.log(`🌐 Đang tải nội dung từ: ${url} (lần thử ${attempt})`);
       
       const response: AxiosResponse<string> = await axios.get(url, {
         headers: {
@@ -135,19 +135,19 @@ export async function fetchWebContent(url: string, maxRetries: number = 1): Prom
         const textContent = extractTextFromHTML(response.data);
         const title = extractTitleFromHTML(response.data);
         
-        // If we got good content, return it
+        // Nếu có nội dung tốt, trả về
         if (textContent && textContent.length > 50) {
-          console.log(`✅ Fetch successful: ${textContent.length} chars from ${url}`);
+          console.log(`✅ Tải thành công: ${textContent.length} ký tự từ ${url}`);
           return {
             url: url,
             content: textContent,
-            title: title || 'No title',
+            title: title || 'Không có tiêu đề',
             success: true,
             length: textContent.length
           };
         } else {
-          // Try fallback content extraction from meta tags
-          console.log(`⚠️ Content too short: ${textContent?.length || 0} chars from ${url}`);
+          // Thử trích xuất nội dung dự phòng từ thẻ meta
+          console.log(`⚠️ Nội dung quá ngắn: ${textContent?.length || 0} ký tự từ ${url}`);
           
           const $ = cheerio.load(response.data);
           const metaDescription = $('meta[name="description"]').attr('content') || '';
@@ -161,23 +161,23 @@ export async function fetchWebContent(url: string, maxRetries: number = 1): Prom
             .join('\n\n');
           
           if (fallbackContent.length > 30) {
-            console.log(`✅ Using fallback content: ${fallbackContent.length} chars from ${url}`);
+            console.log(`✅ Sử dụng nội dung dự phòng: ${fallbackContent.length} ký tự từ ${url}`);
             return {
               url: url,
               content: fallbackContent,
-              title: title || h1Text || 'No title',
+              title: title || h1Text || 'Không có tiêu đề',
               success: true,
               length: fallbackContent.length,
-              note: 'Using meta data - could not extract main content'
+              note: 'Sử dụng meta data - không thể trích xuất nội dung chính'
             };
           }
         }
       }
       
-      throw new Error(`Cannot extract useful content from ${url}`);
+      throw new Error(`Không thể trích xuất nội dung hữu ích từ ${url}`);
       
     } catch (error) {
-      console.log(`❌ Attempt ${attempt} failed for ${url}: ${(error as Error).message}`);
+      console.log(`❌ Lần thử ${attempt} thất bại cho ${url}: ${(error as Error).message}`);
       
       if (attempt === maxRetries) {
         return {
@@ -190,18 +190,18 @@ export async function fetchWebContent(url: string, maxRetries: number = 1): Prom
         };
       }
       
-      // Wait before retry (exponential backoff)
+      // Đợi trước khi thử lại (exponential backoff)
       await new Promise(resolve => setTimeout(resolve, 2000 * attempt));
     }
   }
 
-  // This should never be reached, but TypeScript requires it
+  // Điều này không bao giờ được đạt tới, nhưng TypeScript yêu cầu
   return {
     url: url,
     content: '',
     title: '',
     success: false,
     length: 0,
-    error: 'Max retries exceeded'
+    error: 'Vượt quá số lần thử tối đa'
   };
 }

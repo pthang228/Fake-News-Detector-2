@@ -1,14 +1,14 @@
 // backend/server.ts
-// 🚀 Main server file - clean and focused
+// 🚀 File server chính - gọn gàng và tập trung
 
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 
-// Import our modular services
-import { analyzeURL } from './urlAnalyzer';
-import { analyzeTextWithWebSearch } from './textAnalyzer';
-import { isValidURL } from './googleSearch';
+// Import các service modular của chúng ta
+import { analyzeURL } from '../services/urlAnalyzer';
+import { analyzeTextWithWebSearch } from '../services/textAnalyzer';
+import { isValidURL } from '../services/googleSearch';
 import { HistoryEntry, ApiResponse } from '../types/interfaces';
 
 dotenv.config();
@@ -20,43 +20,43 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// In-memory history storage (consider using database for production)
+// Lưu trữ lịch sử trong bộ nhớ (cân nhắc sử dụng database cho production)
 let analysisHistory: HistoryEntry[] = [];
 
-// 🎯 MAIN ANALYSIS ENDPOINT
+// 🎯 ENDPOINT PHÂN TÍCH CHÍNH
 app.post("/api/analyze", async (req: Request, res: Response): Promise<void> => {
   try {
     const { message }: { message: string } = req.body;
 
-    // Input validation
+    // Xác thực đầu vào
     if (!message || message.trim() === "") {
       res.status(400).json({
-        error: "Please enter content to analyze"
+        error: "Vui lòng nhập nội dung cần phân tích"
       });
       return;
     }
 
-    console.log("📝 Starting analysis:", message.substring(0, 100) + "...");
+    console.log("📝 Bắt đầu phân tích:", message.substring(0, 100) + "...");
 
-    // Determine analysis type: URL vs Text
+    // Xác định loại phân tích: URL vs Văn bản
     if (isValidURL(message)) {
-      console.log("🔗 URL detected - using URL analysis");
+      console.log("🔗 Phát hiện URL - sử dụng phân tích URL");
       await handleURLAnalysis(message, res);
     } else {
-      console.log("📝 Text detected - using text analysis");
+      console.log("📝 Phát hiện văn bản - sử dụng phân tích văn bản");
       await handleTextAnalysis(message, res);
     }
 
   } catch (error) {
-    console.error("❌ General analysis error:", error);
+    console.error("❌ Lỗi phân tích chung:", error);
     res.status(500).json({
-      error: "Error occurred during content analysis",
+      error: "Có lỗi xảy ra khi phân tích nội dung",
       details: (error as Error).message
     });
   }
 });
 
-// 🔗 Handle URL Analysis
+// 🔗 Xử lý Phân tích URL
 async function handleURLAnalysis(url: string, res: Response): Promise<void> {
   try {
     const urlAnalysis = await analyzeURL(url, url);
@@ -69,86 +69,86 @@ async function handleURLAnalysis(url: string, res: Response): Promise<void> {
       originalUrl: url
     };
 
-    // Add statistics based on analysis type
+    // Thêm thống kê dựa trên loại phân tích
     if (urlAnalysis.twoStepProcess) {
       responseData.statistics = {
-        analysisMode: "Two-Step",
+        analysisMode: "Phân Tích URL 2 Bước",
         originalUrl: url,
         sourcesAnalyzed: urlAnalysis.sourcesAnalyzed || 0,
-        identifiedTitle: urlAnalysis.identifiedTitle || "Could not identify",
+        identifiedTitle: urlAnalysis.identifiedTitle || "Không xác định được",
         keyTopics: urlAnalysis.keyTopics || [],
         searchQueries: urlAnalysis.searchQueries || [],
         twoStepEnabled: true
       };
     } else {
       responseData.statistics = {
-        analysisMode: urlAnalysis.limitedAnalysis ? "Limited URL Analysis" : "Basic URL Analysis",
+        analysisMode: urlAnalysis.limitedAnalysis ? "Phân Tích URL Hạn Chế" : "Phân Tích URL Cơ Bản",
         originalUrl: url,
         sourcesAnalyzed: urlAnalysis.sourcesAnalyzed || 0,
         twoStepEnabled: false,
-        note: urlAnalysis.reason_limited || "Two-step process not available"
+        note: urlAnalysis.reason_limited || "Quy trình 2 bước không khả dụng"
       };
     }
 
     res.json(responseData);
     
   } catch (error) {
-    console.error("❌ Error analyzing URL:", error);
+    console.error("❌ Lỗi phân tích URL:", error);
     res.status(500).json({
-      error: "Cannot analyze provided URL",
+      error: "Không thể phân tích URL được cung cấp",
       details: (error as Error).message,
       url: url
     });
   }
 }
 
-// 📝 Handle Text Analysis
+// 📝 Xử lý Phân tích Văn bản
 async function handleTextAnalysis(text: string, res: Response): Promise<void> {
   try {
     const textAnalysisResult = await analyzeTextWithWebSearch(text);
     res.json(textAnalysisResult);
   } catch (error) {
-    console.error("❌ Error in text analysis:", error);
+    console.error("❌ Lỗi trong phân tích văn bản:", error);
     res.status(500).json({
-      error: "Error occurred during text analysis",
+      error: "Có lỗi xảy ra khi phân tích văn bản",
       details: (error as Error).message
     });
   }
 }
 
-// 🧪 TEST ENDPOINT
+// 🧪 ENDPOINT KIỂM TRA
 app.get("/api/test", (req: Request, res: Response): void => {
   const hasGemini = !!process.env.GEMINI_API_KEY;
   const hasGoogle = !!(process.env.GOOGLE_SEARCH_API_KEY && process.env.GOOGLE_SEARCH_ENGINE_ID);
   
   res.json({
-    message: "🚀 Fake News Detection API is running!",
-    status: "healthy",
+    message: "🚀 API Phát Hiện Tin Giả đang hoạt động!",
+    status: "khỏe mạnh",
     configuration: {
-      geminiAI: hasGemini ? "✅ Configured" : "❌ Not configured",
-      googleSearch: hasGoogle ? "✅ Configured" : "❌ Not configured"
+      geminiAI: hasGemini ? "✅ Đã cấu hình" : "❌ Chưa cấu hình",
+      googleSearch: hasGoogle ? "✅ Đã cấu hình" : "❌ Chưa cấu hình"
     },
     features: {
-      textAnalysis: "✅ Available",
-      urlAnalysis: hasGoogle ? "✅ Full Two-Step Process" : "⚠️ Limited (AI only)",
-      webSearch: hasGoogle ? "✅ Enabled" : "❌ Disabled",
-      contentFetching: "✅ Enabled",
-      factChecking: "✅ Enabled"
+      textAnalysis: "✅ Khả dụng",
+      urlAnalysis: hasGoogle ? "✅ Quy Trình 2 Bước Đầy Đủ" : "⚠️ Hạn chế (chỉ AI)",
+      webSearch: hasGoogle ? "✅ Đã bật" : "❌ Đã tắt",
+      contentFetching: "✅ Đã bật",
+      factChecking: "✅ Đã bật"
     },
     analysisCapabilities: {
-      basicAI: "Always available",
-      webEvidence: hasGoogle ? "Available with Google API" : "Requires Google API",
-      twoStepURL: hasGoogle ? "Available" : "Requires Google API",
-      contentExtraction: "Always available"
+      basicAI: "Luôn khả dụng",
+      webEvidence: hasGoogle ? "Khả dụng với Google API" : "Cần Google API",
+      twoStepURL: hasGoogle ? "Khả dụng" : "Cần Google API",
+      contentExtraction: "Luôn khả dụng"
     },
     timestamp: new Date().toISOString(),
     version: "2.0.0"
   });
 });
 
-// 📊 HISTORY MANAGEMENT ENDPOINTS
+// 📊 CÁC ENDPOINT QUẢN LÝ LỊCH SỬ
 
-// Get all history
+// Lấy tất cả lịch sử
 app.get("/api/history", (req: Request, res: Response): void => {
   res.json({
     success: true,
@@ -157,26 +157,26 @@ app.get("/api/history", (req: Request, res: Response): void => {
   });
 });
 
-// Clear all history
+// Xóa tất cả lịch sử
 app.delete("/api/history", (req: Request, res: Response): void => {
   try {
     const deletedCount = analysisHistory.length;
     analysisHistory = [];
     res.json({
       success: true,
-      message: `Successfully deleted ${deletedCount} history entries`,
+      message: `Đã xóa thành công ${deletedCount} mục lịch sử`,
       deletedCount: deletedCount
     });
   } catch (error) {
-    console.error("❌ Error clearing history:", error);
+    console.error("❌ Lỗi xóa lịch sử:", error);
     res.status(500).json({
       success: false,
-      error: "Cannot clear history"
+      error: "Không thể xóa lịch sử"
     });
   }
 });
 
-// Delete specific history item
+// Xóa mục lịch sử cụ thể
 app.delete("/api/history/:id", (req: Request, res: Response): void => {
   try {
     const itemId = parseInt(req.params.id);
@@ -184,7 +184,7 @@ app.delete("/api/history/:id", (req: Request, res: Response): void => {
     if (!itemId || isNaN(itemId)) {
       res.status(400).json({
         success: false,
-        error: "Invalid ID - must be a number"
+        error: "ID không hợp lệ - phải là số"
       });
       return;
     }
@@ -195,27 +195,27 @@ app.delete("/api/history/:id", (req: Request, res: Response): void => {
     if (analysisHistory.length === initialLength) {
       res.status(404).json({
         success: false,
-        error: "Item with this ID not found"
+        error: "Không tìm thấy mục với ID này"
       });
       return;
     }
     
     res.json({
       success: true,
-      message: "Successfully deleted history item",
+      message: "Đã xóa mục lịch sử thành công",
       deletedId: itemId,
       remainingCount: analysisHistory.length
     });
   } catch (error) {
-    console.error("❌ Error deleting history item:", error);
+    console.error("❌ Lỗi xóa mục lịch sử:", error);
     res.status(500).json({
       success: false,
-      error: "Cannot delete history item"
+      error: "Không thể xóa mục lịch sử"
     });
   }
 });
 
-// Get history statistics
+// Lấy thống kê lịch sử
 app.get("/api/history/stats", (req: Request, res: Response): void => {
   try {
     const total = analysisHistory.length;
@@ -241,7 +241,7 @@ app.get("/api/history/stats", (req: Request, res: Response): void => {
       return;
     }
     
-    // Calculate statistics
+    // Tính toán thống kê
     const fakeCount = analysisHistory.filter(item => item.result.isFakeNews).length;
     const realCount = total - fakeCount;
     const urlAnalyses = analysisHistory.filter(item => item.analysisType.includes('URL')).length;
@@ -252,7 +252,7 @@ app.get("/api/history/stats", (req: Request, res: Response): void => {
       analysisHistory.reduce((sum, item) => sum + item.result.confidence, 0) / total
     );
     
-    // Time-based statistics
+    // Thống kê theo thời gian
     const now = new Date();
     const today = now.toDateString();
     const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
@@ -288,33 +288,33 @@ app.get("/api/history/stats", (req: Request, res: Response): void => {
       }
     });
   } catch (error) {
-    console.error("❌ Error calculating statistics:", error);
+    console.error("❌ Lỗi tính toán thống kê:", error);
     res.status(500).json({
       success: false,
-      error: "Cannot calculate statistics"
+      error: "Không thể tính toán thống kê"
     });
   }
 });
 
-// 📝 HISTORY MIDDLEWARE
-// Automatically save successful analyses to history
+// 📝 MIDDLEWARE LỊCH SỬ
+// Tự động lưu các phân tích thành công vào lịch sử
 app.use((req: Request, res: Response, next: NextFunction) => {
   if (req.method === 'POST' && req.path === '/api/analyze') {
     const originalJson = res.json;
     res.json = function (data: any) {
-      // Save to history if analysis was successful
+      // Lưu vào lịch sử nếu phân tích thành công
       if (data.success && data.analysis) {
         try {
           const historyEntry: HistoryEntry = {
-            id: Date.now(), // Simple ID based on timestamp
+            id: Date.now(), // ID đơn giản dựa trên timestamp
             text: data.originalText,
             result: data.analysis,
             sourcesAnalyzed: data.statistics?.sourcesAnalyzed || 0,
-            analysisType: data.twoStepProcess ? 'Two-Step URL Analysis' : 'Text Analysis',
+            analysisType: data.twoStepProcess ? 'Phân Tích URL 2 Bước' : 'Phân Tích Văn Bản',
             timestamp: new Date().toISOString()
           };
 
-          // Add URL-specific information if available
+          // Thêm thông tin cụ thể cho URL nếu có
           if (data.twoStepProcess) {
             historyEntry.originalUrl = data.originalUrl;
             historyEntry.identifiedTitle = data.analysis.identifiedTitle;
@@ -322,74 +322,74 @@ app.use((req: Request, res: Response, next: NextFunction) => {
             historyEntry.twoStepProcess = true;
           }
 
-          // Add to beginning of history array
+          // Thêm vào đầu mảng lịch sử
           analysisHistory.unshift(historyEntry);
 
-          // Keep only last 100 entries to prevent memory issues
+          // Chỉ giữ 100 mục cuối để tránh vấn đề bộ nhớ
           if (analysisHistory.length > 100) {
             analysisHistory = analysisHistory.slice(0, 100);
           }
 
-          console.log(`📊 Saved to history: ${historyEntry.analysisType} - Total entries: ${analysisHistory.length}`);
+          console.log(`📊 Đã lưu vào lịch sử: ${historyEntry.analysisType} - Tổng mục: ${analysisHistory.length}`);
         } catch (error) {
-          console.error("❌ Error saving to history:", error);
-          // Don't fail the request if history saving fails
+          console.error("❌ Lỗi lưu vào lịch sử:", error);
+          // Không làm thất bại request nếu việc lưu lịch sử thất bại
         }
       }
       
-      // Call original json method
+      // Gọi phương thức json gốc
       originalJson.call(this, data);
     };
   }
   next();
 });
 
-// 🚨 ERROR HANDLING MIDDLEWARE
+// 🚨 MIDDLEWARE XỬ LÝ LỖI
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-  console.error('💥 Server error:', err);
+  console.error('💥 Lỗi server:', err);
   res.status(500).json({ 
     success: false,
-    error: 'Internal server error',
-    details: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
+    error: 'Lỗi server nội bộ',
+    details: process.env.NODE_ENV === 'development' ? err.message : 'Có gì đó không ổn'
   });
 });
 
-// 🔍 404 HANDLER
+// 🔍 XỬ LÝ 404
 app.use((req: Request, res: Response) => {
   res.status(404).json({
     success: false,
-    error: 'API endpoint not found',
+    error: 'Không tìm thấy endpoint API',
     path: req.path,
     method: req.method,
     availableEndpoints: [
-      'POST /api/analyze - Main analysis endpoint',
-      'GET /api/test - Health check',
-      'GET /api/history - Get analysis history',
-      'DELETE /api/history - Clear all history',
-      'DELETE /api/history/:id - Delete specific history item',
-      'GET /api/history/stats - Get history statistics'
+      'POST /api/analyze - Endpoint phân tích chính',
+      'GET /api/test - Kiểm tra sức khỏe',
+      'GET /api/history - Lấy lịch sử phân tích',
+      'DELETE /api/history - Xóa tất cả lịch sử',
+      'DELETE /api/history/:id - Xóa mục lịch sử cụ thể',
+      'GET /api/history/stats - Lấy thống kê lịch sử'
     ]
   });
 });
 
-// 🚀 START SERVER
+// 🚀 KHỞI ĐỘNG SERVER
 app.listen(port, () => {
   console.log('\n🚀 ================================');
-  console.log('   FAKE NEWS DETECTION API');
+  console.log('   API PHÁT HIỆN TIN GIẢ');
   console.log('🚀 ================================');
-  console.log(`✅ Server running at: http://localhost:${port}`);
-  console.log(`🤖 Gemini AI: ${process.env.GEMINI_API_KEY ? '✅ Configured' : '❌ Not configured'}`);
-  console.log(`🔍 Google Search: ${process.env.GOOGLE_SEARCH_API_KEY ? '✅ Configured' : '❌ Not configured'}`);
-  console.log(`🌐 Web Analysis: ${process.env.GOOGLE_SEARCH_API_KEY ? '✅ Full capabilities' : '⚠️ Limited (AI only)'}`);
-  console.log(`📊 Features: ${process.env.GOOGLE_SEARCH_API_KEY ? 'Two-Step URL + Enhanced Text Analysis' : 'Basic AI Analysis'}`);
+  console.log(`✅ Server đang chạy tại: http://localhost:${port}`);
+  console.log(`🤖 Gemini AI: ${process.env.GEMINI_API_KEY ? '✅ Đã cấu hình' : '❌ Chưa cấu hình'}`);
+  console.log(`🔍 Google Search: ${process.env.GOOGLE_SEARCH_API_KEY ? '✅ Đã cấu hình' : '❌ Chưa cấu hình'}`);
+  console.log(`🌐 Phân Tích Web: ${process.env.GOOGLE_SEARCH_API_KEY ? '✅ Đầy đủ tính năng' : '⚠️ Hạn chế (chỉ AI)'}`);
+  console.log(`📊 Tính năng: ${process.env.GOOGLE_SEARCH_API_KEY ? 'URL 2 Bước + Phân Tích Văn Bản Nâng Cao' : 'Chỉ Phân Tích AI Cơ Bản'}`);
   console.log('🚀 ================================\n');
   
-  // Log available endpoints
-  console.log('📋 Available endpoints:');
-  console.log('   POST /api/analyze - Main analysis');
-  console.log('   GET  /api/test - Health check');
-  console.log('   GET  /api/history - View history');
-  console.log('   DELETE /api/history - Clear history');
-  console.log('   GET  /api/history/stats - Statistics');
+  // Log các endpoint có sẵn
+  console.log('📋 Các endpoint có sẵn:');
+  console.log('   POST /api/analyze - Phân tích chính');
+  console.log('   GET  /api/test - Kiểm tra sức khỏe');
+  console.log('   GET  /api/history - Xem lịch sử');
+  console.log('   DELETE /api/history - Xóa lịch sử');
+  console.log('   GET  /api/history/stats - Thống kê');
   console.log('');
 });

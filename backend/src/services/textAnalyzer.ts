@@ -1,5 +1,5 @@
 // backend/src/services/textAnalyzer.ts
-// 📝 Text analysis with web search integration
+// 📝 Công cụ phân tích văn bản với tích hợp tìm kiếm web
 
 import { ApiResponse, WebContent, SearchResult, WebAnalysisResult } from '../types/interfaces';
 import { searchGoogleAPI, filterTrustedUrls } from './googleSearch';
@@ -7,13 +7,13 @@ import { fetchWebContent } from './webScraper';
 import { analyzeTextWithAI, analyzeTextWithWebEvidence, analyzeWebContent } from './geminiAI';
 
 /**
- * Main text analysis function with optional web search
- * Combines AI analysis with web evidence when available
+ * Hàm phân tích văn bản chính với tìm kiếm web tùy chọn
+ * Kết hợp phân tích AI với bằng chứng web khi có sẵn
  */
 export async function analyzeTextWithWebSearch(message: string): Promise<ApiResponse> {
-  console.log("📝 Starting text analysis:", message.substring(0, 100) + "...");
+  console.log("📝 Bắt đầu phân tích văn bản:", message.substring(0, 100) + "...");
 
-  // Check if Google Search API is available
+  // Kiểm tra Google Search API có khả dụng không
   const hasGoogleAPI = !!(process.env.GOOGLE_SEARCH_API_KEY && process.env.GOOGLE_SEARCH_ENGINE_ID);
   
   let allSearchResults: SearchResult[] = [];
@@ -21,40 +21,40 @@ export async function analyzeTextWithWebSearch(message: string): Promise<ApiResp
   let webAnalysis: WebAnalysisResult | null = null;
   
   if (hasGoogleAPI) {
-    console.log("🔍 Step 1: Searching for information...");
+    console.log("🔍 Bước 1: Đang tìm kiếm thông tin...");
     
-    // Create search queries based on the input text
+    // Tạo các truy vấn tìm kiếm dựa trên văn bản đầu vào
     const searchQueries = [
-      message.substring(0, 200),                    // First 200 chars
-      `"${message.substring(0, 100)}"`,            // Exact phrase search
-      `${message.substring(0, 100)} fact check`,   // Fact-check search
-      `${message.substring(0, 100)} tin tức`,      // Vietnamese news search
-      `${message.substring(0, 100)} sự thật`       // Vietnamese truth search
+      message.substring(0, 200),                    // 200 ký tự đầu
+      `"${message.substring(0, 100)}"`,            // Tìm kiếm cụm từ chính xác
+      `${message.substring(0, 100)} fact check`,   // Tìm kiếm fact-check
+      `${message.substring(0, 100)} tin tức`,      // Tìm kiếm tin tức tiếng Việt
+      `${message.substring(0, 100)} sự thật`       // Tìm kiếm sự thật tiếng Việt
     ];
 
-    // Perform searches with multiple queries
+    // Thực hiện tìm kiếm với nhiều truy vấn
     for (const query of searchQueries.slice(0, 4)) {
       try {
         const searchResults = await searchGoogleAPI(query, 8);
         allSearchResults = allSearchResults.concat(searchResults);
-        await new Promise(resolve => setTimeout(resolve, 500)); // Rate limiting
+        await new Promise(resolve => setTimeout(resolve, 500)); // Giới hạn tốc độ
       } catch (error) {
-        console.log("❌ Search error:", (error as Error).message);
-        // Continue with other queries even if one fails
+        console.log("❌ Lỗi tìm kiếm:", (error as Error).message);
+        // Tiếp tục với các truy vấn khác ngay cả khi một truy vấn thất bại
       }
     }
 
-    // Remove duplicates and filter trusted URLs
+    // Loại bỏ trùng lặp và lọc URL đáng tin cậy
     const uniqueResults = allSearchResults.filter((result, index, self) => 
       index === self.findIndex(r => r.link === result.link)
     );
     
     const trustedResults = filterTrustedUrls(uniqueResults);
-    console.log(`✅ Found ${trustedResults.length} trusted results`);
+    console.log(`✅ Tìm thấy ${trustedResults.length} kết quả đáng tin cậy`);
 
-    // STEP 2: Fetch content from web pages
+    // BƯỚC 2: Tải nội dung từ các trang web
     if (trustedResults.length > 0) {
-      console.log("🌐 Step 2: Loading content from web pages...");
+      console.log("🌐 Bước 2: Đang tải nội dung từ các trang web...");
       const maxSitesToFetch = 8;
       const fetchPromises = trustedResults.slice(0, maxSitesToFetch).map(result => 
         fetchWebContent(result.link)
@@ -63,41 +63,41 @@ export async function analyzeTextWithWebSearch(message: string): Promise<ApiResp
       webContents = await Promise.all(fetchPromises);
       const successfulFetches = webContents.filter(content => content.success);
       
-      console.log(`✅ Successfully loaded ${successfulFetches.length}/${maxSitesToFetch} web pages`);
+      console.log(`✅ Đã tải thành công ${successfulFetches.length}/${maxSitesToFetch} trang web`);
 
-      // STEP 3: Analyze web content if available
+      // BƯỚC 3: Phân tích nội dung web nếu có
       if (successfulFetches.length > 0) {
-        console.log("🔍 Step 3: Detailed web content analysis...");
+        console.log("🔍 Bước 3: Phân tích chi tiết nội dung web...");
         webAnalysis = await analyzeWebContent(message, webContents);
       }
     }
   } else {
-    console.log("⚠️ Google Search API not available - using AI-only analysis");
+    console.log("⚠️ Google Search API không khả dụng - chỉ sử dụng phân tích AI");
   }
 
-  // STEP 4: Main analysis with Gemini AI
-  console.log("🤖 Step 4: Main analysis with Gemini AI...");
+  // BƯỚC 4: Phân tích chính với Gemini AI
+  console.log("🤖 Bước 4: Phân tích chính với Gemini AI...");
   
   let analysisResult;
   
   if (webAnalysis && webContents.filter(c => c.success).length > 0) {
-    // Enhanced analysis with web evidence
+    // Phân tích nâng cao với bằng chứng web
     analysisResult = await analyzeTextWithWebEvidence(message, webContents, webAnalysis);
   } else {
-    // Basic AI analysis without web evidence
+    // Phân tích AI cơ bản không có bằng chứng web
     analysisResult = await analyzeTextWithAI(message);
   }
 
-  console.log("✅ Analysis completed");
+  console.log("✅ Hoàn thành phân tích");
 
-  // Prepare response with complete data
+  // Chuẩn bị phản hồi với dữ liệu đầy đủ
   const responseData: ApiResponse = {
     success: true,
     analysis: analysisResult,
     originalText: message
   };
 
-  // Add web information if available
+  // Thêm thông tin web nếu có
   if (webContents.length > 0) {
     responseData.webContents = webContents
       .filter(content => content.success)
@@ -109,7 +109,7 @@ export async function analyzeTextWithWebSearch(message: string): Promise<ApiResp
       }));
     
     responseData.statistics = {
-      analysisMode: hasGoogleAPI ? "Text Analysis" : "Basic AI Analysis",
+      analysisMode: hasGoogleAPI ? "Phân Tích Văn Bản" : "Phân Tích AI Cơ Bản",
       totalSitesFound: allSearchResults.length,
       sitesAnalyzed: webContents.filter(c => c.success).length,
       totalContentLength: webContents.filter(c => c.success).reduce((sum, content) => sum + content.length, 0),
@@ -117,8 +117,8 @@ export async function analyzeTextWithWebSearch(message: string): Promise<ApiResp
     };
   } else {
     responseData.statistics = {
-      analysisMode: hasGoogleAPI ? "AI Analysis (No Web Results)" : "Basic AI Analysis",
-      note: hasGoogleAPI ? "No relevant web sources found" : "Google Search API not configured"
+      analysisMode: hasGoogleAPI ? "Phân Tích AI (Không Có Kết Quả Web)" : "Phân Tích AI Cơ Bản",
+      note: hasGoogleAPI ? "Không tìm thấy nguồn web liên quan" : "Google Search API chưa được cấu hình"
     };
   }
 
@@ -126,11 +126,11 @@ export async function analyzeTextWithWebSearch(message: string): Promise<ApiResp
 }
 
 /**
- * Simple text analysis without web search
- * Used as fallback when web search is not available
+ * Phân tích văn bản đơn giản không có tìm kiếm web
+ * Sử dụng làm phương án dự phòng khi tìm kiếm web không khả dụng
  */
 export async function analyzeTextOnly(message: string): Promise<ApiResponse> {
-  console.log("📝 Simple text analysis without web search");
+  console.log("📝 Phân tích văn bản đơn giản không có tìm kiếm web");
   
   const analysisResult = await analyzeTextWithAI(message);
   
@@ -139,8 +139,8 @@ export async function analyzeTextOnly(message: string): Promise<ApiResponse> {
     analysis: analysisResult,
     originalText: message,
     statistics: {
-      analysisMode: "Basic AI Analysis Only",
-      note: "No web search performed"
+      analysisMode: "Chỉ Phân Tích AI Cơ Bản",
+      note: "Không thực hiện tìm kiếm web"
     }
   };
 }

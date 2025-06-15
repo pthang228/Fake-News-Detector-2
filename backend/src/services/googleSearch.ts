@@ -1,12 +1,12 @@
 // backend/src/services/googleSearch.ts
-// 🔍 Google Custom Search API integration and URL filtering
+// 🔍 Tích hợp Google Custom Search API và xử lý URL
 
 import axios from 'axios';
 import { SearchResult } from '../types/interfaces';
 
 /**
- * Search using Google Custom Search API
- * Returns array of search results with title, snippet, and URL
+ * Tìm kiếm bằng Google Custom Search API
+ * Trả về mảng kết quả tìm kiếm với tiêu đề, snippet và URL
  */
 export async function searchGoogleAPI(query: string, maxResults: number = 10): Promise<SearchResult[]> {
   try {
@@ -18,7 +18,7 @@ export async function searchGoogleAPI(query: string, maxResults: number = 10): P
       q: query,
       num: Math.min(maxResults, 10),
       safe: 'medium',
-      lr: 'lang_vi|lang_en'  // Vietnamese and English results
+      lr: 'lang_vi|lang_en'  // Kết quả tiếng Việt và tiếng Anh
     };
 
     const response = await axios.get(searchUrl, { params });
@@ -35,26 +35,26 @@ export async function searchGoogleAPI(query: string, maxResults: number = 10): P
     
     return [];
   } catch (error) {
-    console.error('❌ Error calling Google Search API:', (error as any).response?.data || (error as Error).message);
+    console.error('❌ Lỗi khi gọi Google Search API:', (error as any).response?.data || (error as Error).message);
     return [];
   }
 }
 
 /**
- * Filter search results to prioritize trusted news sources
- * Removes low-quality domains and sorts by trustworthiness
+ * Lọc kết quả tìm kiếm để ưu tiên các nguồn tin đáng tin cậy
+ * Loại bỏ các domain chất lượng thấp và sắp xếp theo độ tin cậy
  */
 export function filterTrustedUrls(searchResults: SearchResult[]): SearchResult[] {
-  // Trusted news domains - prioritized in results
+  // Các domain tin cậy - được ưu tiên trong kết quả
   const trustedDomains: string[] = [
     'wikipedia.org',
-    'gov.vn',           // Vietnamese government sites
-    'edu.vn',           // Vietnamese education sites
+    'gov.vn',           // Trang chính phủ Việt Nam
+    'edu.vn',           // Trang giáo dục Việt Nam
     'bbc.com',
     'cnn.com',
     'reuters.com',
     'ap.org',
-    'vnexpress.net',    // Vietnamese news
+    'vnexpress.net',    // Báo Việt Nam
     'tuoitre.vn',
     'thanhnien.vn',
     'vietnamnet.vn',
@@ -64,12 +64,12 @@ export function filterTrustedUrls(searchResults: SearchResult[]): SearchResult[]
     'wsj.com',
     'nytimes.com',
     'theguardian.com',
-    'factcheck.org',    // Fact-checking sites
+    'factcheck.org',    // Trang fact-check
     'snopes.com',
     'politifact.com'
   ];
   
-  // Low-quality domains to filter out
+  // Các domain chất lượng thấp cần lọc bỏ
   const lowQualityDomains: string[] = [
     'facebook.com',
     'twitter.com',
@@ -79,11 +79,11 @@ export function filterTrustedUrls(searchResults: SearchResult[]): SearchResult[]
     'reddit.com'
   ];
   
-  // Filter out low-quality domains
+  // Lọc bỏ các domain chất lượng thấp
   const filteredResults = searchResults.filter(result => {
     const domain = result.displayLink.toLowerCase();
     
-    // Remove low-quality domains
+    // Loại bỏ domain chất lượng thấp
     if (lowQualityDomains.some(bad => domain.includes(bad))) {
       return false;
     }
@@ -91,19 +91,19 @@ export function filterTrustedUrls(searchResults: SearchResult[]): SearchResult[]
     return true;
   });
   
-  // Sort by trustworthiness (trusted domains first)
+  // Sắp xếp theo độ tin cậy (domain tin cậy lên đầu)
   return filteredResults.sort((a, b) => {
     const aTrusted = trustedDomains.some(trusted => a.displayLink.toLowerCase().includes(trusted));
     const bTrusted = trustedDomains.some(trusted => b.displayLink.toLowerCase().includes(trusted));
     
-    if (aTrusted && !bTrusted) return -1;  // a comes first
-    if (!aTrusted && bTrusted) return 1;   // b comes first
-    return 0;  // maintain original order
+    if (aTrusted && !bTrusted) return -1;  // a lên trước
+    if (!aTrusted && bTrusted) return 1;   // b lên trước
+    return 0;  // giữ thứ tự ban đầu
   });
 }
 
 /**
- * Check if a string is a valid URL
+ * Kiểm tra xem chuỗi có phải là URL hợp lệ không
  */
 export function isValidURL(string: string): boolean {
   try {
@@ -115,56 +115,56 @@ export function isValidURL(string: string): boolean {
 }
 
 /**
- * Extract meaningful keywords from URL path
- * Handles Vietnamese URLs and various URL structures
+ * Trích xuất từ khóa có ý nghĩa từ đường dẫn URL
+ * Xử lý URL tiếng Việt và các cấu trúc URL khác nhau
  */
 export function extractKeywordsFromURL(urlPath: string): string {
   try {
-    console.log("🔍 Analyzing URL:", urlPath);
+    console.log("🔍 Đang phân tích URL:", urlPath);
     
-    // Decode URL first to handle encoded characters
+    // Giải mã URL trước để xử lý ký tự mã hóa
     const decodedPath = decodeURIComponent(urlPath);
-    console.log("🔍 Decoded URL:", decodedPath);
+    console.log("🔍 URL đã giải mã:", decodedPath);
     
-    // Split URL into parts
+    // Tách URL thành các phần
     const pathParts = decodedPath.split('/');
     
-    // Find the part most likely to contain meaningful content
+    // Tìm phần có khả năng chứa nội dung có ý nghĩa nhất
     let bestKeywords = '';
     let maxScore = 0;
     
     for (const part of pathParts) {
-      if (part.length < 5) continue; // Skip too short parts
+      if (part.length < 5) continue; // Bỏ qua phần quá ngắn
       
       let score = 0;
       
-      // Scoring criteria:
+      // Tiêu chí chấm điểm:
       
-      // 1. Contains Vietnamese characters (high value)
+      // 1. Chứa ký tự tiếng Việt (giá trị cao)
       if (/[áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵđ]/i.test(part)) {
         score += 10;
       }
       
-      // 2. Has multiple words (separated by hyphens/underscores)
+      // 2. Có nhiều từ (phân tách bằng dấu gạch ngang/gạch dưới)
       const wordCount = part.split(/[-_]/).length;
       score += wordCount;
       
-      // 3. Reasonable length (not too short, not too long)
+      // 3. Độ dài hợp lý (không quá ngắn, không quá dài)
       if (part.length > 20 && part.length < 200) {
         score += 5;
       }
       
-      // 4. Doesn't contain query parameters
+      // 4. Không chứa tham số truy vấn
       if (!part.includes('=') && !part.includes('?') && !part.includes('&')) {
         score += 3;
       }
       
-      // 5. Not a random ID (all numbers/letters)
+      // 5. Không phải ID ngẫu nhiên (toàn số/chữ)
       if (!/^[a-zA-Z0-9]{10,}$/.test(part)) {
         score += 2;
       }
       
-      console.log(`🔍 Part "${part.substring(0, 50)}..." score: ${score}`);
+      console.log(`🔍 Phần "${part.substring(0, 50)}..." điểm: ${score}`);
       
       if (score > maxScore) {
         maxScore = score;
@@ -173,25 +173,25 @@ export function extractKeywordsFromURL(urlPath: string): string {
     }
     
     if (bestKeywords) {
-      // Clean up the best keywords
+      // Làm sạch từ khóa tốt nhất
       let cleanKeywords = bestKeywords
-        .replace(/[-_]/g, ' ')                    // Replace hyphens/underscores with spaces
-        .replace(/%[0-9A-F]{2}/gi, ' ')          // Remove URL encoding remnants
+        .replace(/[-_]/g, ' ')                    // Thay dấu gạch ngang/gạch dưới bằng khoảng trắng
+        .replace(/%[0-9A-F]{2}/gi, ' ')          // Loại bỏ phần mã hóa URL còn sót lại
         .replace(/[^a-zA-Z0-9\sáàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵđ]/gi, ' ')
-        .replace(/\s+/g, ' ')                    // Multiple spaces → single space
+        .replace(/\s+/g, ' ')                    // Nhiều khoảng trắng → một khoảng trắng
         .trim();
       
-      console.log(`✅ Best keywords: "${cleanKeywords}"`);
+      console.log(`✅ Từ khóa tốt nhất: "${cleanKeywords}"`);
       return cleanKeywords;
     }
     
-    // Fallback strategies
+    // Chiến lược dự phòng
     const domain = urlPath.split('/')[2] || '';
     const lastPath = pathParts[pathParts.length - 1] || '';
     
     let fallbackKeywords = '';
     
-    // Special handling for MSN.com URLs
+    // Xử lý đặc biệt cho URL MSN.com
     if (domain.includes('msn.com')) {
       const categoryIndex = pathParts.findIndex(part => 
         ['lifestyle', 'sports', 'news', 'entertainment', 'health', 'technology'].includes(part)
@@ -202,7 +202,7 @@ export function extractKeywordsFromURL(urlPath: string): string {
       }
     }
     
-    // General fallback - clean last path segment
+    // Dự phòng chung - làm sạch phần cuối đường dẫn
     if (!fallbackKeywords) {
       fallbackKeywords = lastPath
         .replace(/[^a-zA-Z0-9\sáàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵđ-]/gi, ' ')
@@ -210,11 +210,11 @@ export function extractKeywordsFromURL(urlPath: string): string {
         .trim();
     }
     
-    console.log(`🔄 Fallback keywords: "${fallbackKeywords}"`);
-    return fallbackKeywords || 'tin tức mới';  // Default fallback
+    console.log(`🔄 Từ khóa dự phòng: "${fallbackKeywords}"`);
+    return fallbackKeywords || 'tin tức mới';  // Dự phòng mặc định
     
   } catch (error) {
-    console.error("❌ Error extracting keywords from URL:", error);
-    return 'tin tức';  // Safe fallback
+    console.error("❌ Lỗi trích xuất từ khóa từ URL:", error);
+    return 'tin tức';  // Dự phòng an toàn
   }
 }
