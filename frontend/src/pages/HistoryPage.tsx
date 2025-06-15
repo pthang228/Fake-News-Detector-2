@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/components/HistoryPage.css';
 import { useAuth } from '../hooks/useAuth';
-import { firestoreService, type AnalysisEntry } from '../services/firebase/firestoreService';
+import { firestoreService } from '../services/firebase/firestoreService';
+import type { AnalysisEntry } from '../services/firebase/firestoreService';
 
 const HistoryPage: React.FC = () => {
   // State management

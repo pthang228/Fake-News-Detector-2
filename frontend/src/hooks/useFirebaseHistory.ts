@@ -1,6 +1,7 @@
 // frontend/src/hooks/useFirebaseHistory.ts
 import { useState, useEffect, useCallback } from 'react';
-import { firestoreService, type AnalysisEntry } from '../services/firebase/firestoreService';
+import { firestoreService } from '../services/firebase/firestoreService';
+import type { AnalysisEntry } from '../services/firebase/firestoreService';
 import { useAuth } from './useAuth';
 
 interface UseFirebaseHistoryReturn {
