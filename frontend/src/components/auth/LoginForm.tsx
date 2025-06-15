@@ -14,7 +14,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
     e.preventDefault();
 
     if (!email || !password) {
-      alert('không được để trống thông tin đăng nhập.');
+      alert('Không được để trống thông tin đăng nhập.');
       return;
     }
     // Kiểm tra định dạng email

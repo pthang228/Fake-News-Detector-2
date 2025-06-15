@@ -12,7 +12,7 @@ async function setAdminRole(uid: string) {
 }
 
 // Thay uid này bằng uid thực tế của user bạn muốn làm admin
-const adminUid = 'T5AachvKn3aIUPTHun9xhNOdNUb2';
+const adminUid = 'n4OxXNCJdeRudqSEhtmHxVVM5jG2';
 
 setAdminRole(adminUid);
 console.log('Khởi tạo admin thành công');
